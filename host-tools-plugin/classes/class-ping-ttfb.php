@@ -50,6 +50,8 @@ class Ping_TTFB {
 
 		$result = Helpers::domain_form();
 
+		$result .= '<div class="uk-section">';
+
 		if ( ! empty( $the_domain ) && Helpers::is_domain_valid( $the_domain ) ) {
 			$domain = str_replace( array( 'https', 'http', ':', '/' ), '', $the_domain );
 
@@ -57,14 +59,18 @@ class Ping_TTFB {
 
 			$ttfb = shell_exec( 'curl -i -s -w "\nTTFB: %{time_starttransfer}\n" https://' . $domain . ' | egrep "hummingbird-cache|x-cache|TTFB"' );
 
-			$result .= '<div class="host-test-ping-ttfb-results">';
+			$result .= '<p>';
 			$result .= str_replace( PHP_EOL, '<br/>', $ping );
-			$result .= '<br><br>';
+			$result .= '</p>';
+
+			$result .= '<p>';
 			$result .= str_replace( PHP_EOL, '<br/>', $ttfb );
-			$result .= '</div>';
+			$result .= '</p>';
 		} else {
 			$result .= '<h3>Please enter a domain.</h3>';
 		}
+
+		$result .= '</div>';
 
 		return $result;
 	}
