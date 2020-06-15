@@ -46,14 +46,14 @@ class Helpers {
 		} elseif ( isset( $_GET['domain'] ) ) {
 			$the_domain = $_GET['domain'];
 		}
-
-		$form  = '<div class="host-tools-domain-form">';
-		$form .= '<form method="POST">';
-		$form .= '<label for="domainInput">Domain: </label>';
-		$form .= '<input class="u-full-width" type="text" placeholder="example.com" id="domainInput" name="domain" value="' . $the_domain . '"/>';
-		$form .= '<input class="button-primary" type="submit" value="Submit" />';
-		$form .= '</form>';
+		$form .= '<form class="uk-grid-small" uk-grid method="POST">';
+		$form .= '<div class="uk-width-1-2@s">';
+		$form .= '<input class="uk-input" type="text" placeholder="example.com" id="domainInput" name="domain" value="' . $the_domain . '"/>';
 		$form .= '</div>';
+		$form .= '<div class="uk-width-1-2@s">';
+		$form .= '<input class="uk-button uk-button-default" type="submit" value="Submit" />';
+		$form .= '</div>';
+		$form .= '</form>';
 
 		return $form;
 	}

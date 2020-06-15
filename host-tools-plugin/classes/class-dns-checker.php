@@ -58,13 +58,16 @@ class DNS_Checker {
 
 		$result = Helpers::domain_form();
 
+		$result .= '<div class="uk-section">';
+
 		if ( ! empty( $the_domain ) && Helpers::is_domain_valid( $the_domain ) ) {
 			$domain = str_replace( array( 'https', 'http', ':', '/' ), '', $the_domain );
 
-			$result .= '<div class="host-tools-dns-results">';
+			$result .= '<div class="uk-grid-small uk-child-width-1-1@s uk-child-width-1-3@m" uk-grid>';
 
 			foreach ( self::$dns_list as $dns ) {
-				$result .= '<table class="host-tools-table">';
+				$result .= '<div>';
+				$result .= '<table class="uk-table uk-table-striped uk-table-hover uk-table-middle">';
 				$result .= '<tr>';
 				$result .= '<td colspan="2">';
 				$result .= '<h3>DNS ' . $dns . '</h3>';
@@ -78,18 +81,21 @@ class DNS_Checker {
 					if ( in_array( $record['name'], array( 'A', 'AAAA', 'CNAME', 'NS', 'MX' ), true ) ) {
 						$result .= '<td>' . str_replace( PHP_EOL, '<br/>', $record['value'] ) . '</td>';
 					} else {
-						$result .= '<td>' . $record['value'] . '</td>';
+						$result .= '<td style="word-break:break-all;">' . $record['value'] . '</td>';
 					}
 					$result .= '</tr>';
 				}
 
-				$result .= '</table>';
+				$result .= '</table></div>';
+				$result .= '</div>';
 			}
 
 			$result .= '</div>';
 		} else {
-			$result .= '<h3>Please enter a domain.</h3>';
+			$result .= '<p class="uk-text-danger">Please enter a domain.</p>';
 		}
+
+		$result .= '</div>';
 
 		return $result;
 	}
