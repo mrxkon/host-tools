@@ -39,6 +39,11 @@ class Setup {
 
 		add_action( 'wp_footer', array( '\\Host_Tools\\Setup', 'scripts_styles' ), 999 );
 
+		// PHP Info.
+		add_action( 'wp_ajax_host-tools-php-info', array( '\\Host_Tools\\PHP_Info', 'run_test' ) );
+		add_action( 'wp_ajax_nopriv_host-tools-php-info', array( '\\Host_Tools\\PHP_Info', 'run_test' ) );
+		add_action( 'wp_footer', array( '\\Host_Tools\\PHP_Info', 'scripts' ), 999 );
+
 		// Ping & TTFB.
 		add_action( 'wp_ajax_host-tools-ping-ttfb', array( '\\Host_Tools\\Ping_TTFB', 'run_test' ) );
 		add_action( 'wp_ajax_nopriv_host-tools-ping-ttfb', array( '\\Host_Tools\\Ping_TTFB', 'run_test' ) );

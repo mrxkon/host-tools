@@ -39,16 +39,21 @@ class Ping_TTFB {
 	 * Shortcode.
 	 */
 	public static function shortcode() {
-
-		$the_domain = '';
-
-		if ( isset( $_POST['domain'] ) ) {
-			$the_domain = $_POST['domain'];
-		} elseif ( isset( $_GET['domain'] ) ) {
-			$the_domain = $_GET['domain'];
-		}
-
 		$html = Helpers::domain_form();
+
+		if ( isset( $_GET['domain'] ) ) {
+			ob_start();
+			?>
+			<script>
+			( function( $ ) {
+				$( document ).ready( function() {
+					$( '#host-tools-domain-form input[type=submit]' ).click();
+				});
+			} ( jQuery ) );
+			</script>
+			<?php
+			$html .= ob_get_clean();
+		}
 
 		return $html;
 	}
@@ -92,7 +97,6 @@ class Ping_TTFB {
 		?>
 		<script>
 		( function( $ ) {
-
 			$( '#host-tools-domain-form' ).on ( 'submit', function( e ) {
 				e.preventDefault();
 
@@ -112,7 +116,6 @@ class Ping_TTFB {
 					}
 				});
 			});
-
 		} ( jQuery ) );
 		</script>
 		<?php
