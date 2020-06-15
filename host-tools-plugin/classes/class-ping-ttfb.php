@@ -48,12 +48,23 @@ class Ping_TTFB {
 			$the_domain = $_GET['domain'];
 		}
 
-		$result = Helpers::domain_form();
+		$html = Helpers::domain_form();
 
-		$result .= '<div class="uk-section">';
+		return $html;
+	}
 
-		if ( ! empty( $the_domain ) && Helpers::is_domain_valid( $the_domain ) ) {
-			$domain = str_replace( array( 'https', 'http', ':', '/' ), '', $the_domain );
+	/**
+	 * Run test.
+	 */
+	public static function run_test() {
+		if (
+			isset( $_POST['htnonce'] ) &&
+			wp_verify_nonce( $_POST['htnonce'], 'host_tools_test_nonce' ) &&
+			isset( $_POST['domain'] ) &&
+			! empty( $_POST['domain'] ) &&
+			Helpers::is_domain_valid( $_POST['domain'] )
+		) {
+			$domain = str_replace( array( 'https', 'http', ':', '/' ), '', $_POST['domain'] );
 
 			$ping = shell_exec( 'ping -c 5 ' . $domain );
 
@@ -66,13 +77,47 @@ class Ping_TTFB {
 			$result .= '<p>';
 			$result .= str_replace( PHP_EOL, '<br/>', $ttfb );
 			$result .= '</p>';
+
+			wp_send_json_success( $result );
 		} else {
-			$result .= '<h3>Please enter a domain.</h3>';
+			wp_send_json_error( 'Please enter a valid domain.' );
 		}
-
-		$result .= '</div>';
-
-		return $result;
 	}
 
+	/**
+	 * Scripts.
+	 */
+	public static function scripts() {
+		ob_start();
+		?>
+		<script>
+		( function( $ ) {
+
+			$( '#host-tools-domain-form' ).on ( 'submit', function( e ) {
+				e.preventDefault();
+
+				$( '#host-test-results' ).html( '<p class="uk-text-primary">Please wait while we fetch the test results.</p>' );
+
+				var data = {
+						'domain': $( '#host-tools-domain-form #domainInput' ).val(),
+						'action': 'host-tools-ping-ttfb',
+						'htnonce': $( '#host-tools-domain-form #htnonce' ).val(),
+					};
+
+				$.post( host_tools_ajax_url, data, function( r ) {
+					if ( r.success ) {
+						$( '#host-test-results' ).html( r.data );
+					} else {
+						$( '#host-test-results' ).html( '<p class="uk-text-danger">' + r.data +'</p>' );
+					}
+				});
+			});
+
+		} ( jQuery ) );
+		</script>
+		<?php
+		$scripts = ob_get_clean();
+
+		echo $scripts;
+	}
 }

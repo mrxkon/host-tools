@@ -38,13 +38,22 @@ class Setup {
 		add_shortcode( 'host-tools-ping-ttfb', array( '\\Host_Tools\\Ping_TTFB', 'shortcode' ) );
 
 		add_action( 'wp_footer', array( '\\Host_Tools\\Setup', 'scripts_styles' ), 999 );
+
+		// Ping & TTFB.
+		add_action( 'wp_ajax_host-tools-ping-ttfb', array( '\\Host_Tools\\Ping_TTFB', 'run_test' ) );
+		add_action( 'wp_ajax_nopriv_host-tools-ping-ttfb', array( '\\Host_Tools\\Ping_TTFB', 'run_test' ) );
+		add_action( 'wp_footer', array( '\\Host_Tools\\Ping_TTFB', 'scripts' ), 999 );
 	}
 
 	/**
 	 * Scripts & Styles.
 	 */
 	public static function scripts_styles() {
-		$scripts = '';
+		ob_start();
+		?>
+		<script>var host_tools_ajax_url = '<?php echo admin_url( 'admin-ajax.php' ); ?>';</script>
+		<?php
+		$scripts = ob_get_clean();
 
 		echo $scripts;
 	}

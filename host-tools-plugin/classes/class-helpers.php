@@ -46,16 +46,24 @@ class Helpers {
 		} elseif ( isset( $_GET['domain'] ) ) {
 			$the_domain = $_GET['domain'];
 		}
-		$form .= '<form class="uk-grid-small" uk-grid method="POST">';
-		$form .= '<div class="uk-width-1-2@s">';
-		$form .= '<input class="uk-input" type="text" placeholder="example.com" id="domainInput" name="domain" value="' . $the_domain . '"/>';
-		$form .= '</div>';
-		$form .= '<div class="uk-width-1-2@s">';
-		$form .= '<input class="uk-button uk-button-default" type="submit" value="Submit" />';
-		$form .= '</div>';
-		$form .= '</form>';
 
-		return $form;
+		$html .= '<form class="uk-grid-small" uk-grid id="host-tools-domain-form">';
+		$html .= '<div class="uk-width-1-2@s">';
+		$html .= '<input class="uk-input" type="text" placeholder="example.com" id="domainInput" name="domain" value="' . $the_domain . '"/>';
+		$html .= '</div>';
+		$html .= '<div class="uk-width-1-2@s">';
+		$html .= wp_nonce_field( 'host_tools_test_nonce', 'htnonce' );
+		$html .= '<input class="uk-button uk-button-default" type="submit" value="Submit" />';
+		$html .= '</div>';
+		$html .= '</form>';
+
+		$html .= '<div class="uk-section">';
+		$html .= '<div id="host-test-results">';
+		$html .= '<p class="uk-text-warning">Please enter a domain.</p>';
+		$html .= '</div>';
+		$html .= '</div>';
+
+		return $html;
 	}
 
 	/**

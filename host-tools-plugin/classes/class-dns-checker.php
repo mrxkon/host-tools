@@ -86,7 +86,7 @@ class DNS_Checker {
 					$result .= '</tr>';
 				}
 
-				$result .= '</table></div>';
+				$result .= '</table>';
 				$result .= '</div>';
 			}
 
