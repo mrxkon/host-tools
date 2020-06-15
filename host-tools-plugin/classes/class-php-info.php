@@ -43,36 +43,33 @@ class PHP_Info {
 		phpinfo();
 		$phpinfo_raw = ob_get_clean();
 
-		// Extract the body of the `phpinfo()` call, to avoid all the styles they introduce.
 		preg_match_all( '/<body[^>]*>(.*)<\/body>/siU', $phpinfo_raw, $phpinfo );
-
-		// Extract the styles `phpinfo()` creates for this page.
 		preg_match_all( '/<style[^>]*>(.*)<\/style>/siU', $phpinfo_raw, $styles );
 
-		// We remove various styles that break the visual flow of wp-admin.
 		$remove_patterns = array(
 			"/a:.+?\n/si",
 			"/body.+?\n/si",
-			"/h1.+?\n/si",
-			"/h2.+?\n/si",
-			"/h3.+?\n/si",
-			"/h4.+?\n/si",
-			"/h5.+?\n/si",
-			"/h6.+?\n/si",
 		);
 
-		// Output the styles as an inline style block.
 		if ( isset( $styles[1][0] ) ) {
-			$styles = preg_replace( $remove_patterns, '', $styles[1][0] );
+			$styles      = preg_replace( $remove_patterns, '', $styles[1][0] );
+			$style_array = explode( "\n", $styles );
 
-			echo '<style type="text/css">' . $styles . '</style>';
+			echo '<style type="text/css">';
+
+			foreach ( $style_array as $sr ) {
+				if ( ! empty( $sr ) ) {
+					echo 'div.entry ' . $sr;
+				}
+			}
+
+			echo '</style>';
 		}
 
-		// Output the actual phpinfo data.
 		if ( isset( $phpinfo[1][0] ) ) {
 			return $phpinfo[1][0];
 		} else {
-			return 'Couldn\'nt get info.';
+			return 'Couldn not retrieve PHP Info.';
 		}
 	}
 
