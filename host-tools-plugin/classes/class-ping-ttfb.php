@@ -41,20 +41,6 @@ class Ping_TTFB {
 	public static function shortcode() {
 		$html = Helpers::domain_form();
 
-		if ( isset( $_GET['domain'] ) ) {
-			ob_start();
-			?>
-			<script>
-			( function( $ ) {
-				$( document ).ready( function() {
-					$( '#host-tools-domain-form input[type=submit]' ).click();
-				});
-			} ( jQuery ) );
-			</script>
-			<?php
-			$html .= ob_get_clean();
-		}
-
 		return $html;
 	}
 
@@ -87,40 +73,5 @@ class Ping_TTFB {
 		} else {
 			wp_send_json_error( 'Please enter a valid domain.' );
 		}
-	}
-
-	/**
-	 * Scripts.
-	 */
-	public static function scripts() {
-		ob_start();
-		?>
-		<script>
-		( function( $ ) {
-			$( '#host-tools-domain-form' ).on ( 'submit', function( e ) {
-				e.preventDefault();
-
-				$( '#host-test-results' ).html( '<p class="uk-text-primary">Please wait while we fetch the test results.</p>' );
-
-				var data = {
-						'domain': $( '#host-tools-domain-form #domainInput' ).val(),
-						'action': 'host-tools-ping-ttfb',
-						'htnonce': $( '#host-tools-domain-form #htnonce' ).val(),
-					};
-
-				$.post( host_tools_ajax_url, data, function( r ) {
-					if ( r.success ) {
-						$( '#host-test-results' ).html( r.data );
-					} else {
-						$( '#host-test-results' ).html( '<p class="uk-text-danger">' + r.data +'</p>' );
-					}
-				});
-			});
-		} ( jQuery ) );
-		</script>
-		<?php
-		$scripts = ob_get_clean();
-
-		echo $scripts;
 	}
 }

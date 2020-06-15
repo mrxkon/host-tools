@@ -63,6 +63,20 @@ class Helpers {
 		$html .= '</div>';
 		$html .= '</div>';
 
+		if ( isset( $_GET['domain'] ) ) {
+			ob_start();
+			?>
+			<script>
+			( function( $ ) {
+				$( document ).ready( function() {
+					$( '#host-tools-domain-form input[type=submit]' ).click();
+				});
+			} ( jQuery ) );
+			</script>
+			<?php
+			$html .= ob_get_clean();
+		}
+
 		return $html;
 	}
 

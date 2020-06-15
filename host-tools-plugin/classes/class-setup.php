@@ -41,23 +41,88 @@ class Setup {
 		// General Scripts & Styles.
 		add_action( 'wp_footer', array( '\\Host_Tools\\Setup', 'scripts_styles' ), 999 );
 
+		// DNS Check.
+		add_action( 'wp_ajax_host-tools-dns-check', array( '\\Host_Tools\\DNS_Checker', 'run_test' ) );
+		add_action( 'wp_ajax_nopriv_host-tools-dns-check', array( '\\Host_Tools\\DNS_Checker', 'run_test' ) );
+
 		// Ping & TTFB.
 		add_action( 'wp_ajax_host-tools-ping-ttfb', array( '\\Host_Tools\\Ping_TTFB', 'run_test' ) );
 		add_action( 'wp_ajax_nopriv_host-tools-ping-ttfb', array( '\\Host_Tools\\Ping_TTFB', 'run_test' ) );
-		add_action( 'wp_footer', array( '\\Host_Tools\\Ping_TTFB', 'scripts' ), 999 );
 	}
 
 	/**
 	 * Scripts & Styles.
 	 */
 	public static function scripts_styles() {
-		ob_start();
-		?>
-		<script>var host_tools_ajax_url = '<?php echo admin_url( 'admin-ajax.php' ); ?>';</script>
-		<?php
-		$scripts = ob_get_clean();
+		global $post;
 
-		echo $scripts;
+		$scripts_styles = '<script>var host_tools_ajax_url = \'' . admin_url( 'admin-ajax.php' ) . '\';</script>';
+
+		if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'host-tools-dns-checkup' ) ) {
+			ob_start();
+			?>
+			<script>
+			( function( $ ) {
+				$( '#host-tools-domain-form' ).on ( 'submit', function( e ) {
+					e.preventDefault();
+
+					$( '#host-test-results' ).html( '<p class="uk-text-primary">Please wait while we fetch the test results.</p>' );
+
+					var data = {
+							'domain': $( '#host-tools-domain-form #domainInput' ).val(),
+							'action': 'host-tools-dns-check',
+							'htnonce': $( '#host-tools-domain-form #htnonce' ).val(),
+						};
+
+					$.post( host_tools_ajax_url, data, function( r ) {
+						if ( r.success ) {
+							$( '#host-test-results' ).html( r.data );
+						} else {
+							$( '#host-test-results' ).html( '<p class="uk-text-danger">' + r.data +'</p>' );
+						}
+					});
+				});
+			} ( jQuery ) );
+			</script>
+			<?php
+			$dns_check = ob_get_clean();
+
+			$scripts_styles .= $dns_check;
+		}
+
+		if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'host-tools-ping-ttfb' ) ) {
+			ob_start();
+			?>
+			<script>
+			( function( $ ) {
+				$( '#host-tools-domain-form' ).on ( 'submit', function( e ) {
+					e.preventDefault();
+
+					$( '#host-test-results' ).html( '<p class="uk-text-primary">Please wait while we fetch the test results.</p>' );
+
+					var data = {
+							'domain': $( '#host-tools-domain-form #domainInput' ).val(),
+							'action': 'host-tools-ping-ttfb',
+							'htnonce': $( '#host-tools-domain-form #htnonce' ).val(),
+						};
+
+					$.post( host_tools_ajax_url, data, function( r ) {
+						if ( r.success ) {
+							$( '#host-test-results' ).html( r.data );
+						} else {
+							$( '#host-test-results' ).html( '<p class="uk-text-danger">' + r.data +'</p>' );
+						}
+					});
+				});
+			} ( jQuery ) );
+			</script>
+			<?php
+			$ping_ttfb = ob_get_clean();
+
+			$scripts_styles .= $ping_ttfb;
+		}
+
+		echo $scripts_styles;
 	}
 }
 

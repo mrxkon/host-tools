@@ -48,20 +48,23 @@ class DNS_Checker {
 	 * Shortcode.
 	 */
 	public static function shortcode() {
-		$the_domain = '';
-
-		if ( isset( $_POST['domain'] ) ) {
-			$the_domain = $_POST['domain'];
-		} elseif ( isset( $_GET['domain'] ) ) {
-			$the_domain = $_GET['domain'];
-		}
-
 		$result = Helpers::domain_form();
 
-		$result .= '<div class="uk-section">';
+		return $result;
+	}
 
-		if ( ! empty( $the_domain ) && Helpers::is_domain_valid( $the_domain ) ) {
-			$domain = str_replace( array( 'https', 'http', ':', '/' ), '', $the_domain );
+	/**
+	 * Run test.
+	 */
+	public static function run_test() {
+		if (
+			isset( $_POST['htnonce'] ) &&
+			wp_verify_nonce( $_POST['htnonce'], 'host_tools_test_nonce' ) &&
+			isset( $_POST['domain'] ) &&
+			! empty( $_POST['domain'] ) &&
+			Helpers::is_domain_valid( $_POST['domain'] )
+		) {
+			$domain = str_replace( array( 'https', 'http', ':', '/' ), '', $_POST['domain'] );
 
 			$result .= '<div class="uk-grid-small uk-child-width-1-1@s uk-child-width-1-3@m" uk-grid>';
 
@@ -91,13 +94,11 @@ class DNS_Checker {
 			}
 
 			$result .= '</div>';
+
+			wp_send_json_success( $result );
 		} else {
-			$result .= '<p class="uk-text-danger">Please enter a domain.</p>';
+			wp_send_json_error( 'Please enter a valid domain.' );
 		}
-
-		$result .= '</div>';
-
-		return $result;
 	}
 
 	/**
