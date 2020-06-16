@@ -67,33 +67,37 @@ class Cert_Decoder {
 	 * Run test.
 	 */
 	public static function run_test() {
-		if (
-			isset( $_POST['htnonce'] ) &&
-			wp_verify_nonce( $_POST['htnonce'], 'host_tools_cert_decode_test_nonce' ) &&
-			isset( $_POST['cert'] ) &&
-			Helpers::is_cert_valid( $_POST['cert'] )
-		) {
-			$cert = str_replace( array( '<', '>' ), '', $_POST['cert'] );
-			$data = openssl_x509_parse( $cert );
+		if ( ! isset( $_POST['htnonce'] ) || ! wp_verify_nonce( $_POST['htnonce'], 'host_tools_cert_decode_test_nonce' ) ) {
+			wp_send_json_error( 'Could not verify nonce.' );
+		}
 
-			if ( empty( $data ) ) {
-				wp_send_json_error( 'Please enter a valid Certificate.' );
-			}
+		if ( ! isset( $_POST['cert'] ) ) {
+			wp_send_json_error( 'Please enter a Certificate.' );
+		}
 
-			if ( isset( $_POST['key'] ) && Helpers::is_key_valid( $_POST['key'] ) ) {
-				$key = str_replace( array( '<', '>' ), '', $_POST['key'] );
+		$cert = str_replace( array( '<', '>' ), '', $_POST['cert'] );
 
-				if ( openssl_x509_check_private_key( $cert, $key ) ) {
-					$data['privKeyMatch'] = 'True';
-				} else {
-					$data['privKeyMatch'] = 'False';
-				}
-			}
-
-			wp_send_json_success( $data );
-		} else {
+		if ( ! Helpers::is_cert_valid( $cert ) ) {
 			wp_send_json_error( 'Please enter a valid Certificate.' );
 		}
+
+		$data = openssl_x509_parse( $cert );
+
+		if ( empty( $data ) ) {
+			wp_send_json_error( 'Could not parse the Certificate.' );
+		}
+
+		if ( isset( $_POST['key'] ) && Helpers::is_key_valid( $_POST['key'] ) ) {
+			$key = str_replace( array( '<', '>' ), '', $_POST['key'] );
+
+			if ( openssl_x509_check_private_key( $cert, $key ) ) {
+				$data['privKeyMatch'] = 'True';
+			} else {
+				$data['privKeyMatch'] = 'False';
+			}
+		}
+
+		wp_send_json_success( $data );
 	}
 
 }

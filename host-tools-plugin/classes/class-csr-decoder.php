@@ -65,23 +65,27 @@ class CSR_Decoder {
 	 * Run test.
 	 */
 	public static function run_test() {
-		if (
-			isset( $_POST['htnonce'] ) &&
-			wp_verify_nonce( $_POST['htnonce'], 'host_tools_csr_decode_test_nonce' ) &&
-			isset( $_POST['csr'] ) &&
-			Helpers::is_csr_valid( $_POST['csr'] )
-		) {
-			$csr  = str_replace( array( '<', '>' ), '', $_POST['csr'] );
-			$data = openssl_csr_get_subject( $csr );
+		if ( ! isset( $_POST['htnonce'] ) || ! wp_verify_nonce( $_POST['htnonce'], 'host_tools_csr_decode_test_nonce' ) ) {
+			wp_send_json_error( 'Could not verify nonce.' );
+		}
 
-			if ( empty( $data ) ) {
-				wp_send_json_error( 'Please enter a valid CSR.' );
-			}
+		if ( ! isset( $_POST['csr'] ) ) {
+			wp_send_json_error( 'Please enter a CSR.' );
+		}
 
-			wp_send_json_success( $data );
-		} else {
+		$csr = str_replace( array( '<', '>' ), '', $_POST['csr'] );
+
+		if ( ! Helpers::is_csr_valid( $csr ) ) {
 			wp_send_json_error( 'Please enter a valid CSR.' );
 		}
+
+		$data = openssl_csr_get_subject( $csr );
+
+		if ( empty( $data ) ) {
+			wp_send_json_error( 'Could not parse the CSR.' );
+		}
+
+		wp_send_json_success( $data );
 	}
 
 }
