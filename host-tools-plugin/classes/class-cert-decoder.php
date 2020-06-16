@@ -71,7 +71,7 @@ class Cert_Decoder {
 			wp_send_json_error( 'Could not verify nonce.' );
 		}
 
-		if ( ! isset( $_POST['cert'] ) ) {
+		if ( ! isset( $_POST['cert'] ) || empty( $_POST['cert'] ) ) {
 			wp_send_json_error( 'Please enter a Certificate.' );
 		}
 

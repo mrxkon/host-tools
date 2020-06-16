@@ -87,29 +87,34 @@ class Ping_TTFB {
 	 * Run test.
 	 */
 	public static function run_test() {
-		if (
-			isset( $_POST['htnonce'] ) &&
-			wp_verify_nonce( $_POST['htnonce'], 'host_tools_ping_ttfb_test_nonce' ) &&
-			isset( $_POST['domain'] ) &&
-			Helpers::is_domain_valid( $_POST['domain'] )
-		) {
-			$domain = str_replace( array( 'https', 'http', ':', '/' ), '', $_POST['domain'] );
+		if ( ! isset( $_POST['htnonce'] ) || ! wp_verify_nonce( $_POST['htnonce'], 'host_tools_ping_ttfb_test_nonce' ) ) {
+			wp_send_json_error( 'Could not verify nonce.' );
+		}
 
-			$ping = shell_exec( 'ping -c 5 ' . $domain );
+		if ( ! isset( $_POST['domain'] ) || empty( $_POST['domain'] ) ) {
+			wp_send_json_error( 'Please enter a domain.' );
+		}
 
-			$ttfb = shell_exec( 'curl -i -s -w "\nTTFB: %{time_starttransfer}\n" https://' . $domain . ' | egrep "hummingbird-cache|x-cache|TTFB"' );
+		$domain = str_replace( array( 'https', 'http', ':', '/', '<', '>', '(', ')' ), '', $_POST['domain'] );
 
-			$result .= '<p>';
-			$result .= str_replace( PHP_EOL, '<br/>', $ping );
-			$result .= '</p>';
-
-			$result .= '<p>';
-			$result .= str_replace( PHP_EOL, '<br/>', $ttfb );
-			$result .= '</p>';
-
-			wp_send_json_success( $result );
-		} else {
+		if ( ! Helpers::is_domain_valid( $domain ) ) {
 			wp_send_json_error( 'Please enter a valid domain.' );
 		}
+
+		$ping = shell_exec( 'ping -c 5 ' . $domain );
+
+		$ttfb = shell_exec( 'curl -i -s -w "\nTTFB: %{time_starttransfer}\n" https://' . $domain . ' | egrep "hummingbird-cache|x-cache|TTFB"' );
+
+		$result .= '<h2>Results for: ' . $domain . '</h2>';
+
+		$result .= '<p>';
+		$result .= str_replace( PHP_EOL, '<br/>', $ping );
+		$result .= '</p>';
+
+		$result .= '<p>';
+		$result .= str_replace( PHP_EOL, '<br/>', $ttfb );
+		$result .= '</p>';
+
+		wp_send_json_success( $result );
 	}
 }

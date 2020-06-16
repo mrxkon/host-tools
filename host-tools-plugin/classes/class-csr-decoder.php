@@ -69,7 +69,7 @@ class CSR_Decoder {
 			wp_send_json_error( 'Could not verify nonce.' );
 		}
 
-		if ( ! isset( $_POST['csr'] ) ) {
+		if ( ! isset( $_POST['csr'] ) || empty( $_POST['csr'] ) ) {
 			wp_send_json_error( 'Please enter a CSR.' );
 		}
 

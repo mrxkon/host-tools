@@ -96,47 +96,52 @@ class DNS_Checker {
 	 * Run test.
 	 */
 	public static function run_test() {
-		if (
-			isset( $_POST['htnonce'] ) &&
-			wp_verify_nonce( $_POST['htnonce'], 'host_tools_dns_checker_test_nonce' ) &&
-			isset( $_POST['domain'] ) &&
-			Helpers::is_domain_valid( $_POST['domain'] )
-		) {
-			$domain = str_replace( array( 'https', 'http', ':', '/' ), '', $_POST['domain'] );
+		if ( ! isset( $_POST['htnonce'] ) || ! wp_verify_nonce( $_POST['htnonce'], 'host_tools_dns_checker_test_nonce' ) ) {
+			wp_send_json_error( 'Could not verify nonce.' );
+		}
 
-			$result .= '<div class="uk-grid-small uk-child-width-1-1@s uk-child-width-1-3@m" uk-grid>';
+		if ( ! isset( $_POST['domain'] ) || empty( $_POST['domain'] ) ) {
+			wp_send_json_error( 'Please enter a domain.' );
+		}
 
-			foreach ( self::$dns_list as $dns ) {
-				$result .= '<div>';
-				$result .= '<table class="uk-table uk-table-striped uk-table-hover uk-table-middle">';
-				$result .= '<tr>';
-				$result .= '<td colspan="2">';
-				$result .= '<h3>DNS ' . $dns . '</h3>';
-				$result .= '</td>';
-				$result .= '</tr>';
+		$domain = str_replace( array( 'https', 'http', ':', '/', '<', '>', '(', ')' ), '', $_POST['domain'] );
 
-				$records = self::get_records( $domain, $dns );
-				foreach ( $records as $record ) {
-					$result .= '<tr>';
-					$result .= '<td>' . $record['name'] . '</td>';
-					if ( in_array( $record['name'], array( 'A', 'AAAA', 'CNAME', 'NS', 'MX' ), true ) ) {
-						$result .= '<td>' . str_replace( PHP_EOL, '<br/>', $record['value'] ) . '</td>';
-					} else {
-						$result .= '<td style="word-break:break-all;">' . $record['value'] . '</td>';
-					}
-					$result .= '</tr>';
-				}
-
-				$result .= '</table>';
-				$result .= '</div>';
-			}
-
-			$result .= '</div>';
-
-			wp_send_json_success( $result );
-		} else {
+		if ( ! Helpers::is_domain_valid( $domain ) ) {
 			wp_send_json_error( 'Please enter a valid domain.' );
 		}
+
+		$result .= '<h2>Results for: ' . $domain . '</h2>';
+
+		$result .= '<div class="uk-grid-small uk-child-width-1-1@s uk-child-width-1-3@m" uk-grid>';
+
+		foreach ( self::$dns_list as $dns ) {
+			$result .= '<div>';
+			$result .= '<table class="uk-table uk-table-striped uk-table-hover uk-table-middle">';
+			$result .= '<tr>';
+			$result .= '<td colspan="2">';
+			$result .= '<h3>DNS ' . $dns . '</h3>';
+			$result .= '</td>';
+			$result .= '</tr>';
+
+			$records = self::get_records( $domain, $dns );
+			foreach ( $records as $record ) {
+				$result .= '<tr>';
+				$result .= '<td>' . $record['name'] . '</td>';
+				if ( in_array( $record['name'], array( 'A', 'AAAA', 'CNAME', 'NS', 'MX' ), true ) ) {
+					$result .= '<td>' . str_replace( PHP_EOL, '<br/>', $record['value'] ) . '</td>';
+				} else {
+					$result .= '<td style="word-break:break-all;">' . $record['value'] . '</td>';
+				}
+				$result .= '</tr>';
+			}
+
+			$result .= '</table>';
+			$result .= '</div>';
+		}
+
+		$result .= '</div>';
+
+		wp_send_json_success( $result );
 	}
 
 	/**
