@@ -55,7 +55,7 @@ class Ping_TTFB {
 		$html .= '<input class="uk-input" type="text" placeholder="example.com" id="domainInput" name="domain" value="' . $the_domain . '"/>';
 		$html .= '</div>';
 		$html .= '<div class="uk-width-auto@s">';
-		$html .= wp_nonce_field( 'host_tools_test_nonce', 'htnonce' );
+		$html .= wp_nonce_field( 'host_tools_ping_ttfb_test_nonce', 'htnonce' );
 		$html .= '<input class="uk-button uk-button-default" type="submit" value="Submit" />';
 		$html .= '</div>';
 		$html .= '</form>';
@@ -89,9 +89,8 @@ class Ping_TTFB {
 	public static function run_test() {
 		if (
 			isset( $_POST['htnonce'] ) &&
-			wp_verify_nonce( $_POST['htnonce'], 'host_tools_test_nonce' ) &&
+			wp_verify_nonce( $_POST['htnonce'], 'host_tools_ping_ttfb_test_nonce' ) &&
 			isset( $_POST['domain'] ) &&
-			! empty( $_POST['domain'] ) &&
 			Helpers::is_domain_valid( $_POST['domain'] )
 		) {
 			$domain = str_replace( array( 'https', 'http', ':', '/' ), '', $_POST['domain'] );

@@ -42,4 +42,11 @@ class Helpers {
 		return preg_match( '/^[a-zA-Z0-9\.\-\/\:]*$/', $domain );
 	}
 
+	/**
+	 * Validate CSR.
+	 */
+	public static function is_csr_valid( $csr ) {
+		return preg_match( '/-----BEGIN CERTIFICATE REQUEST-----[^-]*-----END CERTIFICATE REQUEST-----/', $csr );
+	}
+
 }

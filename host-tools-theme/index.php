@@ -30,7 +30,7 @@
 			while ( have_posts() ) {
 				the_post();
 
-				echo '<h2 class="uk-heading-line uk-text-center"><span>';
+				echo '<h2 class="uk-heading-line"><span>';
 				the_title();
 				echo '</span></h2>';
 
