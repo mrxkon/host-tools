@@ -43,6 +43,13 @@ class Helpers {
 	}
 
 	/**
+	 * Validate Certificate.
+	 */
+	public static function is_cert_valid( $cert ) {
+		return preg_match( '/-----BEGIN CERTIFICATE-----[^-]*-----END CERTIFICATE-----/', $cert );
+	}
+
+	/**
 	 * Validate CSR.
 	 */
 	public static function is_csr_valid( $csr ) {

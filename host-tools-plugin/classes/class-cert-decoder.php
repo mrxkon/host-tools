@@ -12,7 +12,7 @@
 
 namespace Host_Tools;
 
-class CSR_Decoder {
+class Cert_Decoder {
 	/**
 	 * Instance.
 	 */
@@ -42,17 +42,17 @@ class CSR_Decoder {
 		$html .= '<div class="uk-grid-small uk-grid-divider" uk-grid>';
 
 		$html .= '<div class="uk-width-1-2@s">';
-		$html .= '<form id="host-tools-csr-decoder-form">';
-		$html .= '<label for="csrInput" style="display:block;position:relative;padding-top:9px;">Certificate Signing Request:</label>';
-		$html .= '<textarea style="font-family:monospace;font-size:14px;" class="uk-margin uk-textarea" rows="20" type="text" placeholder="" id="csrInput" name="csr" /></textarea>';
-		$html .= wp_nonce_field( 'host_tools_csr_decode_test_nonce', 'htnonce' );
+		$html .= '<form id="host-tools-cert-decoder-form">';
+		$html .= '<label for="certInput" style="display:block;position:relative;padding-top:9px;">Certificate:</label>';
+		$html .= '<textarea style="font-family:monospace;font-size:14px;" class="uk-margin uk-textarea" rows="20" type="text" placeholder="" id="certInput" name="cert" /></textarea>';
+		$html .= wp_nonce_field( 'host_tools_cert_decode_test_nonce', 'htnonce' );
 		$html .= '<input class="uk-button uk-button-default" type="submit" value="Submit" />';
 		$html .= '</form>';
 		$html .= '</div>';
 
 		$html .= '<div class="uk-width-1-2@s">';
 		$html .= '<div id="host-test-results">';
-		$html .= '<p class="uk-text-warning">Please enter a CSR.</p>';
+		$html .= '<p class="uk-text-warning">Please enter a Certificate.</p>';
 		$html .= '</div>';
 		$html .= '</div>';
 
@@ -67,20 +67,20 @@ class CSR_Decoder {
 	public static function run_test() {
 		if (
 			isset( $_POST['htnonce'] ) &&
-			wp_verify_nonce( $_POST['htnonce'], 'host_tools_csr_decode_test_nonce' ) &&
-			isset( $_POST['csr'] ) &&
-			Helpers::is_csr_valid( $_POST['csr'] )
+			wp_verify_nonce( $_POST['htnonce'], 'host_tools_cert_decode_test_nonce' ) &&
+			isset( $_POST['cert'] ) &&
+			Helpers::is_cert_valid( $_POST['cert'] )
 		) {
-			$csr  = str_replace( array( '<', '>' ), '', $_POST['csr'] );
-			$data = openssl_csr_get_subject( $csr );
+			$cert = str_replace( array( '<', '>' ), '', $_POST['cert'] );
+			$data = openssl_x509_parse( $_POST['cert'] );
 
 			if ( empty( $data ) ) {
-				wp_send_json_error( 'Please enter a valid CSR.' );
+				wp_send_json_error( 'Please enter a valid Certificate.' );
 			}
 
 			wp_send_json_success( $data );
 		} else {
-			wp_send_json_error( 'Please enter a valid CSR.' );
+			wp_send_json_error( 'Please enter a valid Certificate.' );
 		}
 	}
 

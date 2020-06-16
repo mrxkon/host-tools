@@ -37,6 +37,7 @@ class Setup {
 		add_shortcode( 'host-tools-dns-checkup', array( '\\Host_Tools\\DNS_Checker', 'shortcode' ) );
 		add_shortcode( 'host-tools-php-info', array( '\\Host_Tools\\PHP_Info', 'shortcode' ) );
 		add_shortcode( 'host-tools-ping-ttfb', array( '\\Host_Tools\\Ping_TTFB', 'shortcode' ) );
+		add_shortcode( 'host-tools-cert-decoder', array( '\\Host_Tools\\Cert_Decoder', 'shortcode' ) );
 		add_shortcode( 'host-tools-csr-decoder', array( '\\Host_Tools\\CSR_Decoder', 'shortcode' ) );
 
 		// General Scripts & Styles.
@@ -49,6 +50,10 @@ class Setup {
 		// Ping & TTFB.
 		add_action( 'wp_ajax_host-tools-ping-ttfb', array( '\\Host_Tools\\Ping_TTFB', 'run_test' ) );
 		add_action( 'wp_ajax_nopriv_host-tools-ping-ttfb', array( '\\Host_Tools\\Ping_TTFB', 'run_test' ) );
+
+		// Cert Decoder.
+		add_action( 'wp_ajax_host-tools-cert-decoder', array( '\\Host_Tools\\Cert_Decoder', 'run_test' ) );
+		add_action( 'wp_ajax_nopriv_host-tools-cert-decoder', array( '\\Host_Tools\\Cert_Decoder', 'run_test' ) );
 
 		// CSR Decoder.
 		add_action( 'wp_ajax_host-tools-csr-decoder', array( '\\Host_Tools\\CSR_Decoder', 'run_test' ) );
@@ -133,6 +138,55 @@ class Setup {
 			$ping_ttfb = ob_get_clean();
 
 			$scripts_styles .= $ping_ttfb;
+		}
+
+		if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'host-tools-cert-decoder' ) ) {
+			ob_start();
+			?>
+			<script>
+			( function( $ ) {
+				$( document ).ready( function() {
+					$( '#certInput' ).focus();
+				});
+
+				$( '#host-tools-cert-decoder-form' ).on ( 'submit', function( e ) {
+					e.preventDefault();
+
+					$( '#host-test-results' ).html( '<p class="uk-text-primary">Please wait while we fetch the test results.</p>' );
+
+					var data = {
+							'cert': $( '#host-tools-cert-decoder-form #certInput' ).val(),
+							'action': 'host-tools-cert-decoder',
+							'htnonce': $( '#host-tools-cert-decoder-form #htnonce' ).val(),
+						};
+
+					$.post( host_tools_ajax_url, data, function( r ) {
+						if ( r.success ) {
+
+							console.log( r.data.subject.CN );
+							var body_string,
+								date_from = new Date( r.data.validFrom_time_t * 1000 ).toDateString(),
+								date_to   = new Date( r.data.validTo_time_t * 1000 ).toDateString();
+
+							body_string  = '<p><strong>Domain:</strong> ' + r.data.subject.CN;
+							body_string += '<p><strong>Issuer:</strong> ' + r.data.issuer.O + ' (' + r.data.issuer.CN + ')';
+							body_string += '<p><strong>Signature Type:</strong> ' + r.data.signatureTypeSN;
+							body_string += '<p><strong>Valid From:</strong> ' + date_from;
+							body_string += '<p><strong>Valid Until:</strong> ' + date_to;
+							body_string += '<p><strong>Serial Number:</strong> ' + r.data.serialNumberHex;
+
+							$( '#host-test-results' ).html( body_string );
+						} else {
+							$( '#host-test-results' ).html( '<p class="uk-text-danger">' + r.data +'</p>' );
+						}
+					});
+				});
+			} ( jQuery ) );
+			</script>
+			<?php
+			$cert_decoder = ob_get_clean();
+
+			$scripts_styles .= $cert_decoder;
 		}
 
 		if ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'host-tools-csr-decoder' ) ) {
