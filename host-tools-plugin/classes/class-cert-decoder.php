@@ -82,6 +82,7 @@ class Cert_Decoder {
 
 			if ( isset( $_POST['key'] ) && Helpers::is_key_valid( $_POST['key'] ) ) {
 				$key = str_replace( array( '<', '>' ), '', $_POST['key'] );
+
 				if ( openssl_x509_check_private_key( $cert, $key ) ) {
 					$data['privKeyMatch'] = 'True';
 				} else {
