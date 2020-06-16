@@ -37,6 +37,7 @@ class Setup {
 		add_shortcode( 'host-tools-dns-checkup', array( '\\Host_Tools\\DNS_Checker', 'shortcode' ) );
 		add_shortcode( 'host-tools-php-info', array( '\\Host_Tools\\PHP_Info', 'shortcode' ) );
 		add_shortcode( 'host-tools-ping-ttfb', array( '\\Host_Tools\\Ping_TTFB', 'shortcode' ) );
+		add_shortcode( 'host-tools-csr-decoder', array( '\\Host_Tools\\CSR_Decoder', 'shortcode' ) );
 
 		// General Scripts & Styles.
 		add_action( 'wp_footer', array( '\\Host_Tools\\Setup', 'scripts_styles' ), 999 );
@@ -67,15 +68,15 @@ class Setup {
 					$( '#domainInput' ).focus();
 				});
 
-				$( '#host-tools-domain-form' ).on ( 'submit', function( e ) {
+				$( '#host-tools-dns-checker-form' ).on ( 'submit', function( e ) {
 					e.preventDefault();
 
 					$( '#host-test-results' ).html( '<p class="uk-text-primary">Please wait while we fetch the test results.</p>' );
 
 					var data = {
-							'domain': $( '#host-tools-domain-form #domainInput' ).val(),
+							'domain': $( '#host-tools-dns-checker-form #domainInput' ).val(),
 							'action': 'host-tools-dns-check',
-							'htnonce': $( '#host-tools-domain-form #htnonce' ).val(),
+							'htnonce': $( '#host-tools-dns-checker-form #htnonce' ).val(),
 						};
 
 					$.post( host_tools_ajax_url, data, function( r ) {
@@ -103,15 +104,15 @@ class Setup {
 					$( '#domainInput' ).focus();
 				});
 
-				$( '#host-tools-domain-form' ).on ( 'submit', function( e ) {
+				$( '#host-tools-ping-ttfb-form' ).on ( 'submit', function( e ) {
 					e.preventDefault();
 
 					$( '#host-test-results' ).html( '<p class="uk-text-primary">Please wait while we fetch the test results.</p>' );
 
 					var data = {
-							'domain': $( '#host-tools-domain-form #domainInput' ).val(),
+							'domain': $( '#host-tools-ping-ttfb-form #domainInput' ).val(),
 							'action': 'host-tools-ping-ttfb',
-							'htnonce': $( '#host-tools-domain-form #htnonce' ).val(),
+							'htnonce': $( '#host-tools-ping-ttfb-form #htnonce' ).val(),
 						};
 
 					$.post( host_tools_ajax_url, data, function( r ) {

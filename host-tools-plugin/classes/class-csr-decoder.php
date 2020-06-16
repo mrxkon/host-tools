@@ -12,7 +12,7 @@
 
 namespace Host_Tools;
 
-class Helpers {
+class CSR_Decoder {
 	/**
 	 * Instance.
 	 */
@@ -36,10 +36,9 @@ class Helpers {
 	}
 
 	/**
-	 * Validate domain.
+	 * Shortcode.
 	 */
-	public static function is_domain_valid( $domain ) {
-		return preg_match( '/^[a-zA-Z0-9\.\-\/\:]*$/', $domain );
+	public static function shortcode() {
 	}
 
 }
