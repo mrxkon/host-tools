@@ -44,7 +44,7 @@ class CSR_Decoder {
 		$html .= '<div class="uk-width-1-2@s">';
 		$html .= '<form id="host-tools-csr-decoder-form">';
 		$html .= '<label for="csrInput" style="display:block;position:relative;padding-top:9px;">Certificate Signing Request:</label>';
-		$html .= '<textarea style="font-family:monospace;font-size:14px;" class="uk-margin uk-textarea" rows="20" type="text" placeholder="" id="csrInput" name="csr" /></textarea>';
+		$html .= '<textarea style="font-family:monospace;font-size:14px;" class="uk-margin uk-textarea" rows="10" type="text" placeholder="" id="csrInput" name="csr" /></textarea>';
 		$html .= wp_nonce_field( 'host_tools_csr_decode_test_nonce', 'htnonce' );
 		$html .= '<input class="uk-button uk-button-default" type="submit" value="Submit" />';
 		$html .= '</form>';

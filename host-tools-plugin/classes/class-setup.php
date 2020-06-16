@@ -156,14 +156,13 @@ class Setup {
 
 					var data = {
 							'cert': $( '#host-tools-cert-decoder-form #certInput' ).val(),
+							'key': $( '#host-tools-cert-decoder-form #keyInput' ).val(),
 							'action': 'host-tools-cert-decoder',
 							'htnonce': $( '#host-tools-cert-decoder-form #htnonce' ).val(),
 						};
 
 					$.post( host_tools_ajax_url, data, function( r ) {
 						if ( r.success ) {
-
-							console.log( r.data.subject.CN );
 							var body_string,
 								date_from = new Date( r.data.validFrom_time_t * 1000 ).toDateString(),
 								date_to   = new Date( r.data.validTo_time_t * 1000 ).toDateString();
@@ -174,6 +173,10 @@ class Setup {
 							body_string += '<p><strong>Valid From:</strong> ' + date_from;
 							body_string += '<p><strong>Valid Until:</strong> ' + date_to;
 							body_string += '<p><strong>Serial Number:</strong> ' + r.data.serialNumberHex;
+
+							if ( r.data.privKeyMatch ) {
+								body_string += '<p><strong>Private Key Match:</strong> ' + r.data.privKeyMatch;
+							}
 
 							$( '#host-test-results' ).html( body_string );
 						} else {

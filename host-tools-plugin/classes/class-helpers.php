@@ -50,6 +50,13 @@ class Helpers {
 	}
 
 	/**
+	 * Validate Private Key.
+	 */
+	public static function is_key_valid( $key ) {
+		return preg_match( '/-----BEGIN PRIVATE KEY-----[^-]*-----END PRIVATE KEY-----/', $key );
+	}
+
+	/**
 	 * Validate CSR.
 	 */
 	public static function is_csr_valid( $csr ) {
