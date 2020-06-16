@@ -48,10 +48,13 @@ class Helpers {
 		}
 
 		$html .= '<form class="uk-grid-small" uk-grid id="host-tools-domain-form">';
-		$html .= '<div class="uk-width-1-2@s">';
+		$html .= '<div class="uk-width-auto@s">';
+		$html .= '<label for="domainInput" style="display:block;position:relative;padding-top:9px;">Domain:</label>';
+		$html .= '</div>';
+		$html .= '<div class="uk-width-expand@s">';
 		$html .= '<input class="uk-input" type="text" placeholder="example.com" id="domainInput" name="domain" value="' . $the_domain . '"/>';
 		$html .= '</div>';
-		$html .= '<div class="uk-width-1-2@s">';
+		$html .= '<div class="uk-width-auto@s">';
 		$html .= wp_nonce_field( 'host_tools_test_nonce', 'htnonce' );
 		$html .= '<input class="uk-button uk-button-default" type="submit" value="Submit" />';
 		$html .= '</div>';

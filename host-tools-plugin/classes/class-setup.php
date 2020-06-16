@@ -63,6 +63,10 @@ class Setup {
 			?>
 			<script>
 			( function( $ ) {
+				$( document ).ready( function() {
+					$( '#domainInput' ).focus();
+				});
+
 				$( '#host-tools-domain-form' ).on ( 'submit', function( e ) {
 					e.preventDefault();
 
@@ -95,6 +99,10 @@ class Setup {
 			?>
 			<script>
 			( function( $ ) {
+				$( document ).ready( function() {
+					$( '#domainInput' ).focus();
+				});
+
 				$( '#host-tools-domain-form' ).on ( 'submit', function( e ) {
 					e.preventDefault();
 
