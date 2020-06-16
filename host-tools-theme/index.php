@@ -18,6 +18,7 @@
 			array(
 				'theme_location' => 'primary',
 				'items_wrap'     => '<nav class="uk-navbar-container" uk-navbar><div class="uk-navbar-left"><ul id="%1$s" class="uk-navbar-nav %2$s">%3$s</ul></div></div>',
+				'walker'         => new UIKit_Menu_Walker(),
 			)
 		);
 		?>
