@@ -87,7 +87,6 @@ class DNS_Checker {
 	 */
 	public static function return_json( $data ) {
 		if ( is_array( $data ) || is_object( $data ) ) {
-			error_log( $data['domain'] );
 			$domain = Helpers::clean_domain( $data['domain'] );
 		} else {
 			$domain = Helpers::clean_domain( $data );
