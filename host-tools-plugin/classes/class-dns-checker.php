@@ -81,7 +81,7 @@ class DNS_Checker {
 			<script>
 			( function( $ ) {
 				$( document ).ready( function() {
-					$( '#host-tools-domain-form input[type=submit]' ).click();
+					$( '#host-tools-dns-checker-form input[type=submit]' ).click();
 				});
 			} ( jQuery ) );
 			</script>
@@ -127,8 +127,8 @@ class DNS_Checker {
 			foreach ( $records as $record ) {
 				$result .= '<tr>';
 				$result .= '<td>' . $record['name'] . '</td>';
-				if ( in_array( $record['name'], array( 'A', 'AAAA', 'CNAME', 'NS', 'MX' ), true ) ) {
-					$result .= '<td>' . str_replace( PHP_EOL, '<br/>', $record['value'] ) . '</td>';
+				if ( in_array( $record['name'], array( 'A', 'AAAA', 'CNAME', 'NS', 'MX', 'TXT' ), true ) ) {
+					$result .= '<td style="word-break:break-all;">' . str_replace( PHP_EOL, '<br/><br/>', $record['value'] ) . '</td>';
 				} else {
 					$result .= '<td style="word-break:break-all;">' . $record['value'] . '</td>';
 				}

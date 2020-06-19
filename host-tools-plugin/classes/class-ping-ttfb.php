@@ -72,7 +72,7 @@ class Ping_TTFB {
 			<script>
 			( function( $ ) {
 				$( document ).ready( function() {
-					$( '#host-tools-domain-form input[type=submit]' ).click();
+					$( '#host-tools-ping-ttfb-form input[type=submit]' ).click();
 				});
 			} ( jQuery ) );
 			</script>
