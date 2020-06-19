@@ -36,10 +36,29 @@ class Helpers {
 	}
 
 	/**
+	 * DNS List.
+	 */
+	public static function return_dns_list() {
+		return array(
+			'ns1.wpdns.host',
+			'1.1.1.1',
+			'8.8.8.8',
+		);
+	}
+
+	/**
 	 * Validate domain.
 	 */
 	public static function is_domain_valid( $domain ) {
 		return preg_match( '/^[a-zA-Z0-9\.\-\/\:]*$/', $domain );
+	}
+
+	/**
+	 * Clean domain.
+	 */
+	public static function clean_domain( $domain ) {
+		$clean = str_replace( array( 'https', 'http', ':', '/', '\\', '<', '>', '(', ')' ), '', $domain );
+		return $clean;
 	}
 
 	/**

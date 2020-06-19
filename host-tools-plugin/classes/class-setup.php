@@ -40,12 +40,11 @@ class Setup {
 		add_shortcode( 'host-tools-cert-decoder', array( '\\Host_Tools\\Cert_Decoder', 'shortcode' ) );
 		add_shortcode( 'host-tools-csr-decoder', array( '\\Host_Tools\\CSR_Decoder', 'shortcode' ) );
 
+		// REST
+		add_action( 'rest_api_init', array( '\\Host_Tools\\Setup', 'rest_routes' ) );
+
 		// General Scripts & Styles.
 		add_action( 'wp_footer', array( '\\Host_Tools\\Setup', 'scripts_styles' ), 999 );
-
-		// DNS Check.
-		add_action( 'wp_ajax_host-tools-dns-check', array( '\\Host_Tools\\DNS_Checker', 'run_test' ) );
-		add_action( 'wp_ajax_nopriv_host-tools-dns-check', array( '\\Host_Tools\\DNS_Checker', 'run_test' ) );
 
 		// Ping & TTFB.
 		add_action( 'wp_ajax_host-tools-ping-ttfb', array( '\\Host_Tools\\Ping_TTFB', 'run_test' ) );
@@ -58,6 +57,20 @@ class Setup {
 		// CSR Decoder.
 		add_action( 'wp_ajax_host-tools-csr-decoder', array( '\\Host_Tools\\CSR_Decoder', 'run_test' ) );
 		add_action( 'wp_ajax_nopriv_host-tools-csr-decoder', array( '\\Host_Tools\\CSR_Decoder', 'run_test' ) );
+	}
+
+	/**
+	 * Rest routes.
+	 */
+	public static function rest_routes() {
+		register_rest_route(
+			'dns',
+			'/(?P<domain>.+)',
+			array(
+				'methods'  => 'GET',
+				'callback' => array( '\\Host_Tools\\DNS_Checker', 'return_json' ),
+			)
+		);
 	}
 
 	/**
@@ -84,16 +97,37 @@ class Setup {
 
 					var data = {
 							'domain': $( '#host-tools-dns-checker-form #domainInput' ).val(),
-							'action': 'host-tools-dns-check',
-							'htnonce': $( '#host-tools-dns-checker-form #htnonce' ).val(),
 						};
 
-					$.post( host_tools_ajax_url, data, function( r ) {
-						if ( r.success ) {
-							$( '#host-test-results' ).html( r.data );
-						} else {
-							$( '#host-test-results' ).html( '<p class="uk-text-danger">' + r.data +'</p>' );
-						}
+					$.get( 'https://tools.wpmudev.host/wp-json/dns/' + data.domain, function( r ) {
+						body_string  = '<h2>Results for: ' + r.domain + '</h2>';
+						body_string += '<div class="uk-grid-small uk-child-width-1-1@s uk-child-width-1-3@m" uk-grid>';
+						$.each( r.dns , function( ns, records ) {
+								body_string += '<div>';
+								body_string += '<table class="uk-table uk-table-striped uk-table-hover">';
+								body_string += '<tr>';
+								body_string += '<td colspan="2">';
+								body_string += '<h3>DNS ' + ns + '</h3>';
+								body_string += '</td>';
+								body_string += '</tr>';
+
+								$.each( records, function( record, entry ) {
+									body_string += '<tr>';
+									body_string += '<td><p>' + record + '</p></td>';
+									body_string += '<td>';
+									$.each( entry, function( key, value ) {
+										body_string += '<p>' + value + '<p/>';
+									});
+									body_string += '</td>'
+									body_string += '</tr>';
+								});
+
+								body_string += '</table>';
+								body_string += '</div>';
+						});
+
+						body_string += '</div>';
+						$( '#host-test-results' ).html( body_string );
 					});
 				});
 			} ( jQuery ) );
